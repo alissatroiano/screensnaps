@@ -1,5 +1,7 @@
 import { Devvit, useState, useForm } from '@devvit/public-api';
 
+Devvit.configure({ redditAPI: true });
+
 Devvit.addCustomPostType({
   name: 'ScreenScraps',
   render: (context) => {
