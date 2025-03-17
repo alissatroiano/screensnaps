@@ -1,47 +1,50 @@
-import { Devvit, useState, useForm } from '@devvit/public-api';
+import { Devvit, useForm, useState } from '@devvit/public-api';
 
-Devvit.configure({ redditAPI: true });
+Devvit.configure({
+  redditAPI: true,
+  media: true,
+  redis: true,
+});
+
+const myForm = Devvit.createForm(
+  (data) => {
+    return {
+      fields: [
+        {
+          type: 'string',
+          name: 'movieTitle',
+          label: 'Movie Title',
+          defaultValue: data.title,
+          required: true,
+        },
+        {
+          type: 'image',
+          name: 'myImage',
+          label: 'Image goes here',
+          defaultValue: data.myImage,
+          required: true,
+        }
+      ],
+    };
+  },
+);
+
+  
+Devvit.addMenuItem({
+  label: 'SCREENSCRAPS',
+  location: 'subreddit',
+  onPress: async (_event, context) => {
+      context.ui.showForm(myForm);
+  },
+});
 
 Devvit.addCustomPostType({
-  name: 'ScreenScraps',
+  name: 'my-custom-post',
   render: (context) => {
-    const [name, setName] = useState('unknown');
-    const [image, setImage] = useState('unknown');
-
-    const myForm = useForm(
-      {
-        fields: [
-          {
-            type: 'string',
-            name: 'name',
-            label: 'Name',
-          },
-          {
-            type: 'image', // This tells the form to expect an image
-            name: 'myImage',
-            label: 'Image goes here',
-            required: true,
-          }
-        ],
-      },
-      (values) => {
-        setName(values.name),
-        console.log(values.myImage);
-        setImage(values.myImage);
-      }
-    );
-
     return (
-      <vstack gap="medium" height="100%" alignment="middle center">
-        <text>Hello {name}!</text>
-        <button
-          onPress={() => {
-            context.ui.showForm(myForm);
-          }}
-        >
-          Set name
-        </button>
-      </vstack>
+      <blocks>
+        <image url={'myImage'} imageHeight="320px" imageWidth="320px" />
+      </blocks>
     );
   },
 });
