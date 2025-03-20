@@ -3,8 +3,8 @@ import { Devvit, useForm, useState } from '@devvit/public-api';
 Devvit.configure({
   redditAPI: true,
   media: true,
-  redis: true,
-});
+  customPostType: true,
+  ui: true,});
 
 const myForm = Devvit.createForm(
   (data) => {
@@ -28,10 +28,9 @@ const myForm = Devvit.createForm(
     };
   },
 );
-
   
 Devvit.addMenuItem({
-  label: 'SCREENSCRAPS',
+  label: 'Screen Snaps',
   location: 'subreddit',
   onPress: async (_event, context) => {
       context.ui.showForm(myForm);
@@ -39,12 +38,16 @@ Devvit.addMenuItem({
 });
 
 Devvit.addCustomPostType({
-  name: 'my-custom-post',
+  name: 'Screen Snaps',
+  description: 'Post your favorite movie screen snaps',
+  height: 'tall',
   render: (context) => {
+    const { title, myImage } = context.postState;
     return (
-      <blocks>
-        <image url={'myImage'} imageHeight="320px" imageWidth="320px" />
-      </blocks>
+      <vstack>
+        <text>{title}</text>
+        <image url={myImage} />
+      </vstack>
     );
   },
 });
