@@ -1,10 +1,8 @@
-import { Devvit, useForm, useState } from '@devvit/public-api';
+import {Devvit} from '@devvit/public-api'
 
 Devvit.configure({
   redditAPI: true,
-  media: true,
-  customPostType: true,
-  ui: true,});
+});
 
 const myForm = Devvit.createForm(
   (data) => {
@@ -28,28 +26,38 @@ const myForm = Devvit.createForm(
     };
   },
 );
-  
+
 Devvit.addMenuItem({
   label: 'Screen Snaps',
   location: 'subreddit',
   onPress: async (_event, context) => {
       context.ui.showForm(myForm);
-  },
-});
+      const subreddit = await context.reddit.getSubredditById(context.subredditId);
+
+      await context.reddit.submitPost({
+        subredditName: subreddit.name,
+        title: 'Custom post!',
+        preview: render(context),
+      });
+    },
+  });
+
+const render: Devvit.CustomPostComponent = () => {
+  return (
+    <vstack padding="medium" gap="medium" cornerRadius="medium">
+      <text style="heading" size="xxlarge">
+        Hello!
+      </text>
+      <image url={'myImage'} imageWidth={128} imageHeight={128} />
+    </vstack>
+  );
+};
 
 Devvit.addCustomPostType({
   name: 'Screen Snaps',
-  description: 'Post your favorite movie screen snaps',
-  height: 'tall',
-  render: (context) => {
-    const { title, myImage } = context.postState;
-    return (
-      <vstack>
-        <text>{title}</text>
-        <image url={myImage} />
-      </vstack>
-    );
-  },
+  description: 'Test custom post for showing a custom asset!',
+  render,
 });
+
 
 export default Devvit;
